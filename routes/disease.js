@@ -61,7 +61,22 @@ router.get("/:id", async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 })
+router.get("/:id/user/:userid/testdetails", async (req, res) => {
+    const { id ,userid} = req.params;
+   try{
+    const query = ` SELECT td.id, td.userId, td.testId, td.metrics, td.nextVisit, td.disaseId, t.name as test_name, d.name as disase_name
+    FROM public.testDetails td
+    LEFT JOIN public.test t ON t.id = td.testId
+    LEFT JOIN public.disase d ON d.id = td.disaseId
+    WHERE td.userId = $1 AND td.disaseId = $2;`;
 
+   const result = await pool.query(query, [userid, id]);
+        res.json({ success: true, disase: result.rows });
+    } catch (error) {
+        console.error("Error fetching disase:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+})
 router.put("/:id", async (req, res) => {
     const { id } = req.params;
     const { name, testId } = req.body;
