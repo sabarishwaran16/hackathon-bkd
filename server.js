@@ -19,7 +19,10 @@ const routes = [
 
 routes.forEach((route) => {
   try {
-    app.use(route.path, require(route.module));
+    (async () => {
+      const module = await import(route.module);
+      app.use(route.path, module.default);
+    })();
   } catch (error) {
     console.error(`Error loading route ${route.path}:`, error.message);
   }

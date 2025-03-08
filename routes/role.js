@@ -1,11 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const { pool } = require("../db");
-require("dotenv").config();
+const authMiddleware = require("../middleware/authMiddleware");
+const { adminAccessMiddleware } = require("../middleware/accessMiddleware");
+require("dotenv").config()
 
 
-router.post("/", async (req, res) => {
-    try{
+router.post("/", authMiddleware, adminAccessMiddleware, async (req, res) => {
+    try {
         const { name } = req.body;
         if (!name) {
             return res.status(400).json({ error: "name is required" });
@@ -15,13 +17,14 @@ router.post("/", async (req, res) => {
             VALUES ($1) RETURNING id;
         `;
         await pool.query(insertTestQuery, [name]);
-        res.status(201).json({ success: true, message: "Role created!" });    }
-catch(e){
-    res.status(500).json({ error: "Role failed", details: e.message });
-}
+        res.status(201).json({ success: true, message: "Role created!" });
+    }
+    catch (e) {
+        res.status(500).json({ error: "Role failed", details: e.message });
+    }
 });
 
-router.get("/", async (req, res) => {
+router.get("/", authMiddleware, async (req, res) => {
     try {
         const result = await pool.query("SELECT name FROM public.test");
         res.json({ success: true, role: result.rows });
@@ -31,7 +34,7 @@ router.get("/", async (req, res) => {
     }
 })
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", authMiddleware, async (req, res) => {
     const { id } = req.params;
     try {
         const result = await pool.query(" name FROM public.test WHERE id = $1", [id]);
@@ -46,7 +49,7 @@ router.get("/:id", async (req, res) => {
 })
 
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", authMiddleware, adminAccessMiddleware, async (req, res) => {
     const { id } = req.params;
     try {
         const result = await pool.query("DELETE FROM public.test WHERE id = $1", [id]);
@@ -60,7 +63,7 @@ router.delete("/:id", async (req, res) => {
     }
 })
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", authMiddleware, adminAccessMiddleware, async (req, res) => {
     const { id } = req.params;
     const { name } = req.body;
     try {
@@ -69,7 +72,7 @@ router.put("/:id", async (req, res) => {
             SET name = $1,
             WHERE id = $2;
         `;
-        await pool.query(updateTestQuery, [name,id]);
+        await pool.query(updateTestQuery, [name, id]);
         res.json({ success: true, message: "Role updated!" });
     } catch (error) {
         console.error("Error updating role:", error);

@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const authMiddleware = require("../middleware/auth");
+const authMiddleware = require("../middleware/authMiddleware");
 const { pool } = require("../db");
 
 router.get("/dashboard", authMiddleware, async (req, res) => {
@@ -39,3 +39,5 @@ router.get("/dashboard", authMiddleware, async (req, res) => {
         res.status(500).json({ error: "Test Details failed", details: e.message });
     }
 });
+
+module.exports = router;

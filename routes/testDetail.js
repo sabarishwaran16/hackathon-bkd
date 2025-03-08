@@ -3,14 +3,15 @@ const router = express.Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { pool } = require("../db");
+const authMiddleware = require("../middleware/authMiddleware");
 require("dotenv").config()
 
 //give testDetails curl
 
-router.post("/", async (req, res) => {
-    try{
+router.post("/", authMiddleware, async (req, res) => {
+    try {
         const { userId, testId, metrics, nextVisit, disaseId } = req.body;
-        if (!userId || !testId || !metrics  || !disaseId) {
+        if (!userId || !testId || !metrics || !disaseId) {
             return res.status(400).json({ error: "All fields are required" });
         }
         const insertTestDetailsQuery = `
@@ -18,13 +19,14 @@ router.post("/", async (req, res) => {
             VALUES ($1, $2, $3, $4, $5) RETURNING id;
         `;
         await pool.query(insertTestDetailsQuery, [userId, testId, metrics, nextVisit, disaseId]);
-        res.status(201).json({ success: true, message: "Test Details created!" });    }
-catch(e){
-    res.status(500).json({ error: "Test Details failed", details: e.message });
-}
+        res.status(201).json({ success: true, message: "Test Details created!" });
+    }
+    catch (e) {
+        res.status(500).json({ error: "Test Details failed", details: e.message });
+    }
 });
 
-router.get("/", async (req, res) => {
+router.get("/", authMiddleware, async (req, res) => {
     try {
         const result = await pool.query("SELECT id, userId, testId, metrics, nextVisit, disaseId FROM public.testDetails");
         res.json({ success: true, testDetails: result.rows });
@@ -34,7 +36,7 @@ router.get("/", async (req, res) => {
     }
 });
 
-router.get("/:userId", async (req, res) => {
+router.get("/:userId", authMiddleware, async (req, res) => {
     const { userId } = req.params;
     try {
         const result = await pool.query("SELECT id, userId, testId, metrics, nextVisit, disaseId FROM public.testDetails WHERE userId = $1", [userId]);
@@ -48,7 +50,7 @@ router.get("/:userId", async (req, res) => {
     }
 })
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", authMiddleware, async (req, res) => {
     const { id } = req.params;
     const { userId, testId, metrics, nextVisit, disaseId } = req.body;
     try {
@@ -65,7 +67,7 @@ router.put("/:id", async (req, res) => {
     }
 })
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", authMiddleware, async (req, res) => {
     const { id } = req.params;
     try {
         const deleteTestDetailsQuery = `

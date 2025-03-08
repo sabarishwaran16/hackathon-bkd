@@ -1,15 +1,16 @@
 const express = require("express");
 const router = express.Router();
 const { pool } = require("../db");
+const authMiddleware = require("../middleware/authMiddleware");
 require("dotenv").config()
 
 //give test curl
 // curl -X POST -H "Content-Type: application/json" -d '{"name":"test1","type":"blood","syrum":"blood","routienTime":"2021-09-01"}' http://localhost:3000/
-router.post("/", async (req, res) => {
-    try{
+router.post("/", authMiddleware, async (req, res) => {
+    try {
         const { name, type, syrum, routienTime } = req.body;
         //rotine time should be in time without time zone
-        
+
         if (!name || !type || !syrum || !routienTime) {
             return res.status(400).json({ error: "All fields are required" });
         }
@@ -18,13 +19,14 @@ router.post("/", async (req, res) => {
             VALUES ($1, $2, $3, $4) RETURNING id;
         `;
         await pool.query(insertTestQuery, [name, type, syrum, routienTime]);
-        res.status(201).json({ success: true, message: "Test created!" });    }
-catch(e){
-    res.status(500).json({ error: "Test failed", details: e.message });
-}
+        res.status(201).json({ success: true, message: "Test created!" });
+    }
+    catch (e) {
+        res.status(500).json({ error: "Test failed", details: e.message });
+    }
 });
 
-router.get("/", async (req, res) => {
+router.get("/", authMiddleware, async (req, res) => {
     try {
         const result = await pool.query("SELECT id, name, type, syrum, routienTime FROM public.test");
         res.json({ success: true, test: result.rows });
@@ -34,7 +36,7 @@ router.get("/", async (req, res) => {
     }
 })
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", authMiddleware, async (req, res) => {
     const { id } = req.params;
     try {
         const result = await pool.query("SELECT id, name, type, syrum, routienTime FROM public.test WHERE id = $1", [id]);
@@ -63,7 +65,7 @@ router.get("/:id", async (req, res) => {
 //     }
 // })
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", authMiddleware, async (req, res) => {
     const { id } = req.params;
     const { name, type, syrum, routienTime } = req.body;
     try {

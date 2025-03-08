@@ -1,5 +1,4 @@
 const jwt = require('jsonwebtoken');
-const config = require('../utils/config'); // Import the config to get SECRET_KEY
 const { pool } = require('../db');
 
 // JWT middleware to verify token
