@@ -16,8 +16,6 @@ router.post("/users/register", async (req, res) => {
     }
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    //
-
     await pool.query("BEGIN");
     // Insert user and get ID
     const insertUserQuery = `
