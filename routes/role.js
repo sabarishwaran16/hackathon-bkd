@@ -11,7 +11,7 @@ router.post("/", async (req, res) => {
             return res.status(400).json({ error: "name is required" });
         }
         const insertTestQuery = `
-            INSERT INTO public.test (name) 
+            INSERT INTO public.role (name) 
             VALUES ($1) RETURNING id;
         `;
         await pool.query(insertTestQuery, [name]);
@@ -23,10 +23,10 @@ catch(e){
 
 router.get("/", async (req, res) => {
     try {
-        const result = await pool.query("SELECT name FROM public.test");
+        const result = await pool.query("SELECT name FROM public.role");
         res.json({ success: true, role: result.rows });
     } catch (error) {
-        console.error("Error fetching test:", error);
+        console.error("Error fetching role", error);
         res.status(500).json({ error: "Internal Server Error" });
     }
 })
@@ -34,13 +34,13 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
     const { id } = req.params;
     try {
-        const result = await pool.query(" name FROM public.test WHERE id = $1", [id]);
+        const result = await pool.query(" name FROM public.role WHERE id = $1", [id]);
         if (result.rows.length === 0) {
             return res.status(404).json({ error: "Role not found" });
         }
         res.json({ success: true, role: result.rows });
     } catch (error) {
-        console.error("Error fetching test:", error);
+        console.error("Error fetching role", error);
         res.status(500).json({ error: "Internal Server Error" });
     }
 })
@@ -49,7 +49,7 @@ router.get("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
     const { id } = req.params;
     try {
-        const result = await pool.query("DELETE FROM public.test WHERE id = $1", [id]);
+        const result = await pool.query("DELETE FROM public.role WHERE id = $1", [id]);
         if (result.rowCount === 0) {
             return res.status(404).json({ error: "Role not found" });
         }
@@ -65,7 +65,7 @@ router.put("/:id", async (req, res) => {
     const { name } = req.body;
     try {
         const updateTestQuery = `
-            UPDATE public.test
+            UPDATE public.role
             SET name = $1,
             WHERE id = $2;
         `;

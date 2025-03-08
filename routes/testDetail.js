@@ -21,7 +21,7 @@ router.post("/", async (req, res) => {
         res.status(201).json({ success: true, message: "Test Details created!" });    }
 catch(e){
     res.status(500).json({ error: "Test Details failed", details: e.message });
-}
+}   
 });
 
 router.get("/", async (req, res) => {

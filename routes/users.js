@@ -22,12 +22,16 @@ router.post("/users/register", async (req, res) => {
     //
 
     await pool.query("BEGIN");
+
+    // get roleid by searching with role table name 
+    const roleQuery = `SELECT id FROM public.role WHERE name = $1`;
+    const roleResult = await pool.query(roleQuery, [role]);
     // Insert user and get ID
     const insertUserQuery = `
-        INSERT INTO public.users (name, mobile, email, password) 
-        VALUES ($1, $2, $3, $4) RETURNING id;
+        INSERT INTO public.users (name, mobile, email, password,roleid) 
+        VALUES ($1, $2, $3, $4,$5) RETURNING id;
     `;
-    const userResult = await pool.query(insertUserQuery, [name, mobile, email, hashedPassword]);
+    const userResult = await pool.query(insertUserQuery, [name, mobile, email, hashedPassword,roleResult.rows[0].id]);
     const userId = userResult.rows[0].id;
     // Insert user details
     const insertUserDetailsQuery = `

@@ -20,8 +20,14 @@ router.post("/", async (req, res) => {
         await pool.query(insertTestQuery, [name, type, syrum, routienTime]);
         res.status(201).json({ success: true, message: "Test created!" });    }
 catch(e){
-    res.status(500).json({ error: "Test failed", details: e.message });
-}
+    if (e.code === "23505") {
+        // Handle unique constraint violation
+        let errorMessage = "Duplicate entry.";
+        if (e.detail.includes("test_name")) {
+          errorMessage = "name is already taken.";
+        } 
+        return res.status(400).json({ error: errorMessage });
+}}
 });
 
 router.get("/", async (req, res) => {
