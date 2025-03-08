@@ -22,7 +22,7 @@ const authMiddleware = (req, res, next) => {
 
       // Attach decoded user data to the request object
       const checkUser = await pool.query(
-        'SELECT users.id, users.name,users.mobile,users.email, role.name as role_name FROM public.users INNER JOIN public.role ON users.role_id = role.id WHERE users.id = $1',
+        'SELECT users.id, users.name, users.mobile, users.email, role.name as role_name FROM public.users INNER JOIN public.role ON users.roleId = role.id WHERE users.id = $1',
         [decoded.userId]
       );
       if (checkUser.rows.length === 0) {
