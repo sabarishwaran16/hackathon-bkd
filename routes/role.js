@@ -4,7 +4,7 @@ const { pool } = require("../db");
 require("dotenv").config();
 
 
-router.post("/role", async (req, res) => {
+router.post("/", async (req, res) => {
     try{
         const { name } = req.body;
         if (!name) {
@@ -21,7 +21,7 @@ catch(e){
 }
 });
 
-router.get("/role", async (req, res) => {
+router.get("/", async (req, res) => {
     try {
         const result = await pool.query("SELECT name FROM public.test");
         res.json({ success: true, role: result.rows });
@@ -31,7 +31,7 @@ router.get("/role", async (req, res) => {
     }
 })
 
-router.get("/role/:id", async (req, res) => {
+router.get("/:id", async (req, res) => {
     const { id } = req.params;
     try {
         const result = await pool.query(" name FROM public.test WHERE id = $1", [id]);
@@ -46,7 +46,7 @@ router.get("/role/:id", async (req, res) => {
 })
 
 
-router.delete("/role/:id", async (req, res) => {
+router.delete("/:id", async (req, res) => {
     const { id } = req.params;
     try {
         const result = await pool.query("DELETE FROM public.test WHERE id = $1", [id]);
@@ -60,7 +60,7 @@ router.delete("/role/:id", async (req, res) => {
     }
 })
 
-router.put("/role/:id", async (req, res) => {
+router.put("/:id", async (req, res) => {
     const { id } = req.params;
     const { name } = req.body;
     try {
