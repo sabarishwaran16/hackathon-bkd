@@ -1,8 +1,7 @@
-
-export const patientAccessMiddleware = (req, res, next) => {
+const patientAccessMiddleware = (req, res, next) => {
     try {
         if (req.user[role_name] === 'patient') {
-            next(); // Pass to the next middleware/route handler
+            next();
         };
         return res.status(403).send({ message: 'You are not autharized' });
     } catch (error) {
@@ -10,13 +9,30 @@ export const patientAccessMiddleware = (req, res, next) => {
     }
 };
 
-export const doctorAccessMiddleware = (req, res, next) => {
+const doctorAccessMiddleware = (req, res, next) => {
     try {
         if (req.user[role_name] === 'doctor') {
-            next(); // Pass to the next middleware/route handler
+            next();
         };
         return res.status(403).send({ message: 'You are not autharized' });
     } catch (error) {
         return res.status(500).json({ error: 'An error occurred during authentication' });
     }
+};
+
+const adminAccessMiddleware = (req, res, next) => {
+    try {
+        if (req.user[role_name] === 'admin') {
+            next();
+        };
+        return res.status(403).send({ message: 'You are not autharized' });
+    } catch (error) {
+        return res.status(500).json({ error: 'An error occurred during authentication' });
+    }
+};
+
+module.exports = {
+    patientAccessMiddleware,
+    doctorAccessMiddleware,
+    adminAccessMiddleware
 };
