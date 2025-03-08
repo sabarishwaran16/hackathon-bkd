@@ -5,39 +5,93 @@ const jwt = require("jsonwebtoken");
 const { pool } = require("../db");
 require("dotenv").config();
 
-// JWT Secret Keys (Move to env variables in production)
+
+
+
+
 
 router.post("/users/register", async (req, res) => {
-  const { username, email, password ,userDetails} = req.body;
-  if (!username || !email || !password || !userDetails) {
-      return res.status(400).json({ error: "All fields are required" });
-  }
+  try{
+    //need to add user details in this route if face any errors revoke use begin and commit
+    const { name, mobile, email, password,userDetails ,role} = req.body;
+    if (!name || !mobile || !email || !password || !userDetails || !role) {
+        return res.status(400).json({ error: "All fields are required" });
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-  
-  const hashedPassword = await bcrypt.hash(password, 10);
-  try {
-      await pool.query("BEGIN");
+    //
 
-      // Insert user and get ID
-      const insertUserQuery = `
-          INSERT INTO public.users (username, email, password) 
-          VALUES ($1, $2, $3) RETURNING id;
-      `;
+    await pool.query("BEGIN");
+    // Insert user and get ID
+    const insertUserQuery = `
+        INSERT INTO public.users (name, mobile, email, password) 
+        VALUES ($1, $2, $3, $4) RETURNING id;
+    `;
+    const userResult = await pool.query(insertUserQuery, [name, mobile, email, hashedPassword]);
+    const userId = userResult.rows[0].id;
+    // Insert user details
+    const insertUserDetailsQuery = `
+      INSERT INTO public.userDetails (street, door_no, district, state, pincode, blood_group, specialization, reportingPerson, nextVisit) 
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id;
+    `;
+    const userDetailsResult = await pool.query(insertUserDetailsQuery, [
+      userDetails.street|| null, 
+      userDetails.door_no || null, 
+      userDetails.district || null, 
+      userDetails.state || null, 
+      userDetails.pincode || null, 
+      userDetails.blood_group || null, 
+      userDetails.specialization || null, 
+      userDetails.reportingPerson || null, 
+      userDetails.nextVisit || null
+    ]);
+    const userDetailId = userDetailsResult.rows[0].id;
 
-      const userResult = await pool.query(insertUserQuery, [username, email, hashedPassword]);
-      const userId = userResult.rows[0].id;
+    // Update user with userDetailId
+    const updateUserQuery = `
+      UPDATE public.users SET userDetailId = $1 WHERE id = $2;
+    `;
+    await pool.query(updateUserQuery, [userDetailId, userId]);
+    
+
+    await pool.query("COMMIT");
+    res.status(201).json({ success: true, message: "User registered!" });
+  }catch(e){
+    res.status(500).json({ error: "User registration failed", details: e.message });
+  }})
+
+
+// router.post("/users/register", async (req, res) => {
+//   const { username, email, password ,userDetails} = req.body;
+//   if (!username || !email || !password || !userDetails) {
+//       return res.status(400).json({ error: "All fields are required" });
+//   }
+
+
+//   const hashedPassword = await bcrypt.hash(password, 10);
+//   try {
+//       await pool.query("BEGIN");
+
+//       // Insert user and get ID
+//       const insertUserQuery = `
+//           INSERT INTO public.users (username, email, password) 
+//           VALUES ($1, $2, $3) RETURNING id;
+//       `;
+
+//       const userResult = await pool.query(insertUserQuery, [username, email, hashedPassword]);
+//       const userId = userResult.rows[0].id;
 
     
-      await pool.query("COMMIT");
-      res.status(201).json({ success: true, message: "User registered and workspace created!" });
-  } catch (error) {
-      await pool.query("ROLLBACK");
+//       await pool.query("COMMIT");
+//       res.status(201).json({ success: true, message: "User registered and workspace created!" });
+//   } catch (error) {
+//       await pool.query("ROLLBACK");
       
       
-      // Handle other errors
-      res.status(500).json({ error: "Registration failed", details: error.message });
-    }
-});
+//       // Handle other errors
+//       res.status(500).json({ error: "Registration failed", details: error.message });
+//     }
+// });
 
   
   router.get("/", async (req, res) => {

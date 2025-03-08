@@ -11,6 +11,7 @@ app.use(express.json());
 
 const routes = [
   { path: "/api/auth", module: "./routes/users.js" },
+  { path: "/api/test", module: "./routes/test.js" },
 ]
 
 routes.forEach((route) => {

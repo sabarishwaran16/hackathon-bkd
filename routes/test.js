@@ -3,10 +3,13 @@ const router = express.Router();
 const { pool } = require("../db");
 require("dotenv").config();
 
-
-router.post("/test", async (req, res) => {
+//give test curl
+// curl -X POST -H "Content-Type: application/json" -d '{"name":"test1","type":"blood","syrum":"blood","routienTime":"2021-09-01"}' http://localhost:3000/
+router.post("/", async (req, res) => {
     try{
         const { name, type, syrum, routienTime } = req.body;
+        //rotine time should be in time without time zone
+        
         if (!name || !type || !syrum || !routienTime) {
             return res.status(400).json({ error: "All fields are required" });
         }
@@ -21,7 +24,7 @@ catch(e){
 }
 });
 
-router.get("/test", async (req, res) => {
+router.get("/", async (req, res) => {
     try {
         const result = await pool.query("SELECT id, name, type, syrum, routienTime FROM public.test");
         res.json({ success: true, test: result.rows });
@@ -31,7 +34,7 @@ router.get("/test", async (req, res) => {
     }
 })
 
-router.get("/test/:id", async (req, res) => {
+router.get("/:id", async (req, res) => {
     const { id } = req.params;
     try {
         const result = await pool.query("SELECT id, name, type, syrum, routienTime FROM public.test WHERE id = $1", [id]);
@@ -46,7 +49,7 @@ router.get("/test/:id", async (req, res) => {
 })
 
 
-router.delete("/test/:id", async (req, res) => {
+router.delete("/:id", async (req, res) => {
     const { id } = req.params;
     try {
         const result = await pool.query("DELETE FROM public.test WHERE id = $1", [id]);
@@ -60,7 +63,7 @@ router.delete("/test/:id", async (req, res) => {
     }
 })
 
-router.put("/test/:id", async (req, res) => {
+router.put("/:id", async (req, res) => {
     const { id } = req.params;
     const { name, type, syrum, routienTime } = req.body;
     try {
