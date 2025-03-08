@@ -131,7 +131,7 @@ router.post("/login", async (req, res) => {
 
   try {
     // Find user by email
-    const userQuery = `SELECT id, username, email, password FROM public.users WHERE email = $1`;
+    const userQuery = `SELECT id,name as  username, email, password FROM public.users WHERE email = $1`;
     const userResult = await pool.query(userQuery, [email]);
 
     if (userResult.rows.length === 0) {
