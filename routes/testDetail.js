@@ -5,14 +5,16 @@ const jwt = require("jsonwebtoken");
 const { pool } = require("../db");
 require("dotenv").config()
 
-router.post("/testDetails", async (req, res) => {
+//give testDetails curl
+
+router.post("/", async (req, res) => {
     try{
         const { userId, testId, metrics, nextVisit, disaseId } = req.body;
         if (!userId || !testId || !metrics  || !disaseId) {
             return res.status(400).json({ error: "All fields are required" });
         }
         const insertTestDetailsQuery = `
-            INSERT INTO public.testDetails (userId, testId, metrics,  disaseId) 
+            INSERT INTO public.testDetails (userId, testId, metrics, nextvisit , disaseId) 
             VALUES ($1, $2, $3, $4, $5) RETURNING id;
         `;
         await pool.query(insertTestDetailsQuery, [userId, testId, metrics, nextVisit, disaseId]);
@@ -22,7 +24,7 @@ catch(e){
 }
 });
 
-router.get("/testDetails", async (req, res) => {
+router.get("/", async (req, res) => {
     try {
         const result = await pool.query("SELECT id, userId, testId, metrics, nextVisit, disaseId FROM public.testDetails");
         res.json({ success: true, testDetails: result.rows });
@@ -32,7 +34,7 @@ router.get("/testDetails", async (req, res) => {
     }
 });
 
-router.get("/testDetails/:userId", async (req, res) => {
+router.get("/:userId", async (req, res) => {
     const { userId } = req.params;
     try {
         const result = await pool.query("SELECT id, userId, testId, metrics, nextVisit, disaseId FROM public.testDetails WHERE userId = $1", [userId]);
@@ -46,7 +48,7 @@ router.get("/testDetails/:userId", async (req, res) => {
     }
 })
 
-router.put("/testDetails/:id", async (req, res) => {
+router.put("/:id", async (req, res) => {
     const { id } = req.params;
     const { userId, testId, metrics, nextVisit, disaseId } = req.body;
     try {

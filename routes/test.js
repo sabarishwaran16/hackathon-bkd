@@ -49,19 +49,19 @@ router.get("/:id", async (req, res) => {
 })
 
 
-router.delete("/:id", async (req, res) => {
-    const { id } = req.params;
-    try {
-        const result = await pool.query("DELETE FROM public.test WHERE id = $1", [id]);
-        if (result.rowCount === 0) {
-            return res.status(404).json({ error: "Test not found" });
-        }
-        res.json({ success: true, message: "Test deleted" });
-    } catch (error) {
-        console.error("Error deleting test:", error);
-        res.status(500).json({ error: "Internal Server Error" });
-    }
-})
+// router.delete("/:id", async (req, res) => {
+//     const { id } = req.params;
+//     try {
+//         const result = await pool.query("DELETE FROM public.test WHERE id = $1", [id]);
+//         if (result.rowCount === 0) {
+//             return res.status(404).json({ error: "Test not found" });
+//         }
+//         res.json({ success: true, message: "Test deleted" });
+//     } catch (error) {
+//         console.error("Error deleting test:", error);
+//         res.status(500).json({ error: "Internal Server Error" });
+//     }
+// })
 
 router.put("/:id", async (req, res) => {
     const { id } = req.params;
