@@ -11,9 +11,9 @@ router.get("/", authMiddleware, async (req, res) => {
             result = await pool.query(`
                 SELECT u.id, ud.*
                 FROM users u
-                Inner JOIN userDetails ud ON u.userDetailId = ud.id
+                Inner JOIN userDetails ud ON u.userDetailId = $1
                 WHERE ud.reportingPerson = u.name
-            `);
+            `,[user.id]);
         } else if (user.role_name === "patient") {
             result = await pool.query(`
                 SELECT 
