@@ -3,7 +3,7 @@ const router = express.Router();
 const authMiddleware = require("../middleware/authMiddleware");
 const { pool } = require("../db");
 
-router.get("/dashboard", authMiddleware, async (req, res) => {
+router.get("/", authMiddleware, async (req, res) => {
     try {
         const user = req.user;
         let result;
