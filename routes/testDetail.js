@@ -3,8 +3,7 @@ const router = express.Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { pool } = require("../db");
-require("dotenv").config();
-
+require("dotenv").config()
 
 router.post("/testDetails", async (req, res) => {
     try{

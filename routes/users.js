@@ -51,7 +51,7 @@ router.post("/users/register", async (req, res) => {
     const updateUserQuery = `
       UPDATE public.users SET userDetailId = $1 WHERE id = $2;
     `;
-    await pool.query(updateUserQuery, [userDetailId, userId]);
+    await pool.query(updateUserQuery, [userDetailId, userId])
     
 
     await pool.query("COMMIT");

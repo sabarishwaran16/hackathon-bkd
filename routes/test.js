@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { pool } = require("../db");
-require("dotenv").config();
+require("dotenv").config()
 
 //give test curl
 // curl -X POST -H "Content-Type: application/json" -d '{"name":"test1","type":"blood","syrum":"blood","routienTime":"2021-09-01"}' http://localhost:3000/
