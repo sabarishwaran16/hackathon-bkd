@@ -16,6 +16,7 @@ const routes = [
   { path: "/api/disease", module: "./routes/disease.js" },
   { path: "/api/role", module: "./routes/role.js" },
   { path: "/api/dashboard", module: "./routes/dashboard.js" },
+  // { path: "/api/patient", module: "./routes/patient.js" },
 ]
 
 routes.forEach((route) => {

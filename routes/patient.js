@@ -3,10 +3,10 @@ const router = express.Router();
 const authMiddleware = require("../middleware/authMiddleware");
 const { pool } = require("../db");
 
+
 router.get("/", authMiddleware, async (req, res) => {
     try {
         const user = req.user;
-        
         let result;
         if (user.role_name === "doctor") {
             result = await pool.query(`
@@ -14,16 +14,15 @@ router.get("/", authMiddleware, async (req, res) => {
                 FROM users u
                 Inner JOIN userDetails ud ON u.userdetailid = ud.id
                 WHERE ud.reportingPerson = u.name and u.id = $1
-            `,[user.id]);
-        } 
-         if (user.role_name === "patient") {
+            `, [user.id]);
+        }
+        if (user.role_name === "patient") {
             result = await pool.query(`
                 SELECT 
                     u.id as userId, u.name as userName, u.email as userEmail, 
                     t.id as testId, t.metrics, t.nextVisit, t.disaseId 
                 FROM 
                     public.users u 
-               
                 Inner JOIN 
                     public.testDetails t 
                 ON 
@@ -39,4 +38,5 @@ router.get("/", authMiddleware, async (req, res) => {
     }
 });
 
-module.exports = router;
+
+module.exports = router
